@@ -49,6 +49,13 @@ header ion-icon{
     height: 26px;
 }
 
+button{
+    border: none;
+    background-color: #FFFFFF;
+    width: 80px;
+    height: 80px;
+    padding: none;
+}
 input{
     width: 90%;
     height: 80%;
@@ -63,6 +70,7 @@ input::placeholder{
     font-size: 18px;
     line-height: 21px;
     color:black;
+    border:none;
   }
 
 .mensagem{
@@ -98,4 +106,9 @@ input::placeholder{
 
 .reservadamente{
     background-color: #FFDEDE;
+}
+
+input:focus {
+    box-shadow: 0 0 0 0;
+    outline: 0;
 }
