@@ -22,7 +22,7 @@ function trataErro(erro){
     console.log("nome ja existe");
     console.log("Status code: " + erro.response.status);
 	if(erro.response.status === 400){
-        entrada();
+        window.location.reload();
     }
 }
 
@@ -42,7 +42,7 @@ function sucessoOnline(resposta){
 function erroOnline(erro){
     console.log("Status code: " + erro.response.status);
     if(erro.response.status === 400){
-        entrada();
+        window.location.reload();
     }
 }
 
@@ -81,12 +81,40 @@ function exibeChat(){
             </div>`
         }
         if(chat[i].type == "private_message"){
-            template =`
-            <div class="mensagem reservadamente">
-                <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> para <span class="nome"> ${chat[i].to} </span>${chat[i].text}
-            </div>`
+            if(chat[i].to === nome){
+                template =`
+                <div class="mensagem reservadamente">
+                    <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to} </span>${chat[i].text}
+                </div>`
+            }
         }
         conversas.innerHTML = conversas.innerHTML + template;
         
     }
 }
+
+function enviaMensagens(){
+    let msg = document.querySelector("input").value;
+    const novaMsg = {
+        from:`${nome}`,
+        to:`Todos`,
+        text:`${msg}`,
+        type:`message`
+    }
+
+    document.querySelector("input").value = "";
+
+    const envio = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', novaMsg);
+    envio.then(sucessoEnvio);
+    envio.catch(erroEnvio);
+}
+
+function sucessoEnvio(certim){
+    console.log(certim);
+    carregarChat();
+}
+
+function erroEnvio(erro){
+    console.log("Status code: " + erro.response.status);
+}
+
