@@ -8,7 +8,6 @@ function entrada(){
     nome = prompt("Digite seu lindo nome");
     usuario = {name:`${nome}`};
     const requisicao = axios.post('https://mock-api.driven.com.br/api/v6/uol/participants',usuario)
-    console.log(requisicao);
     requisicao.then(sucesso);
     requisicao.catch(trataErro);
 }
@@ -53,13 +52,13 @@ function carregarChat(){
 }
 
 function processarChat(carregarMensagens){
-    console.log(carregarMensagens.data);
     chat = carregarMensagens.data;
     exibeChat();
 }
 
 function erroCarregarChat(erro){
     console.log("Status code: " + erro.response.status);
+    window.location.reload();
 }
 
 function exibeChat(){
@@ -70,20 +69,20 @@ function exibeChat(){
         if(chat[i].type == "status"){
             template =`
             <!--entrada//saida na sala-->
-            <div class="mensagem entrou">
+            <div data-test="message" class="mensagem entrou">
                 <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span>${chat[i].text}
             </div>`
         }
         if(chat[i].type == "message"){
             template =`
-            <div class="mensagem">
+            <div data-test="message" class="mensagem">
                 <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> para <span class="nome"> ${chat[i].to} </span>${chat[i].text}
             </div>`
         }
         if(chat[i].type == "private_message"){
             if(chat[i].to === nome){
                 template =`
-                <div class="mensagem reservadamente">
+                <div data-test="message" class="mensagem reservadamente">
                     <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to} </span>${chat[i].text}
                 </div>`
             }
@@ -91,30 +90,33 @@ function exibeChat(){
         conversas.innerHTML = conversas.innerHTML + template;
         
     }
+    
 }
 
 function enviaMensagens(){
     let msg = document.querySelector("input").value;
-    const novaMsg = {
-        from:`${nome}`,
-        to:`Todos`,
-        text:`${msg}`,
-        type:`message`
+    if(document.querySelector("input").value != ""){
+        const novaMsg = {
+            from:`${nome}`,
+            to:`Todos`,
+            text:`${msg}`,
+            type:`message`
+        }
+
+        document.querySelector("input").value = "";
+
+        const envio = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', novaMsg);
+        envio.then(sucessoEnvio);
+        envio.catch(erroEnvio);
     }
-
-    document.querySelector("input").value = "";
-
-    const envio = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', novaMsg);
-    envio.then(sucessoEnvio);
-    envio.catch(erroEnvio);
 }
 
 function sucessoEnvio(certim){
-    console.log(certim);
     carregarChat();
 }
 
 function erroEnvio(erro){
     console.log("Status code: " + erro.response.status);
+    window.location.reload();
 }
 
