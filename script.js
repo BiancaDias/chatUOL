@@ -71,31 +71,26 @@ function exibeChat(){
     conversas.innerHTML = '';
     let template = "";
     for(let i=0; i< chat.length; i++){
-        if(chat[i].type == "status"){
+        if(chat[i].type === "status"){
             template =`
             <!--entrada//saida na sala-->
             <div data-test="message" class="mensagem entrou">
                 <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span>${chat[i].text}
             </div>`
         }
-        if(chat[i].type == "message"){
+        if(chat[i].type === "message"){
             template =`
             <div data-test="message" class="mensagem">
                 <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> para <span class="nome"> ${chat[i].to}: </span>${chat[i].text}
             </div>`
         }
-        if(chat[i].type == "private_message"){
-            if(chat[i].to === nome){
+        if(chat[i].type === "private_message" && (chat[i].to === nome || chat[i].from === nome)){
+           
                 template =`
                 <div data-test="message" class="mensagem reservadamente">
                     <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to}: </span>${chat[i].text}
                     </div>`
-            }else{
-                template =`
-                <div data-test="message" class="mensagem reservadamente escondido">
-                    <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to}: </span>${chat[i].text}
-                    </div>`
-            }
+        
         }
         conversas.innerHTML = conversas.innerHTML + template;
         
