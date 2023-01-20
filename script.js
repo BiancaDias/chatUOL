@@ -10,6 +10,7 @@ function entrada(){
         nome = prompt("Digite seu nome");
     }
     usuario = {name:nome };
+ 
     const requisicao = axios.post('https://mock-api.driven.com.br/api/v6/uol/participants',usuario)
     requisicao.then(sucesso);
     requisicao.catch(trataErro);
@@ -27,7 +28,7 @@ function trataErro(erro){
     console.log("Status code: " + erro.response.status);
 	if(erro.response.status === 400){
         alert("Nome de usuário inválido! Por favor, digite outro");
-        entrada();
+        window.location.reload();
     }
 }
 
