@@ -4,9 +4,12 @@ let chat;
 entrada();
 //se o status responder = a 400 é pq ja tem um usuario com esse nome e deve pedir um novo
 //se responder = a 200 deu certo
-function entrada(){    
-    nome = prompt("Digite seu lindo nome");
-    usuario = {name:`${nome}`};
+function entrada(){  
+    nome = "";
+    while(nome === undefined || nome=== null || nome === ""){  
+        nome = prompt("Digite seu nome");
+    }
+    usuario = {name:nome };
     const requisicao = axios.post('https://mock-api.driven.com.br/api/v6/uol/participants',usuario)
     requisicao.then(sucesso);
     requisicao.catch(trataErro);
@@ -14,14 +17,17 @@ function entrada(){
 
 function sucesso(resposta){
     console.log("usuario fez loguin");
-    setInterval(manterLogado, 3000);  
+    carregarChat();
+    setInterval(manterLogado, 5000); 
+    setInterval(carregarChat, 3000); 
 }
 
 function trataErro(erro){
     console.log("nome ja existe");
     console.log("Status code: " + erro.response.status);
 	if(erro.response.status === 400){
-        window.location.reload();
+        alert("Nome de usuário inválido! Por favor, digite outro");
+        entrada();
     }
 }
 
@@ -33,9 +39,6 @@ function manterLogado(){
 
 function sucessoOnline(resposta){
     console.log(resposta.status) // se responde 200, vamos atualizar as mensagens
-    if(resposta.status === 200){
-        carregarChat();
-    }
 }
 
 function erroOnline(erro){
@@ -66,26 +69,26 @@ function exibeChat(){
     conversas.innerHTML = '';
     let template = "";
     for(let i=0; i< chat.length; i++){
-        if(chat[i].type == "status"){
+        if(chat[i].type === "status"){
             template =`
             <!--entrada//saida na sala-->
             <div data-test="message" class="mensagem entrou">
                 <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span>${chat[i].text}
             </div>`
         }
-        if(chat[i].type == "message"){
+        if(chat[i].type === "message"){
             template =`
             <div data-test="message" class="mensagem">
-                <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> para <span class="nome"> ${chat[i].to} </span>${chat[i].text}
+                <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> para <span class="nome"> ${chat[i].to}: </span>${chat[i].text}
             </div>`
         }
-        if(chat[i].type == "private_message"){
-            if(chat[i].to === nome){
+        if(chat[i].type === "private_message" && (chat[i].to === nome || chat[i].from === nome)){
+           
                 template =`
                 <div data-test="message" class="mensagem reservadamente">
-                    <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to} </span>${chat[i].text}
-                </div>`
-            }
+                    <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to}: </span>${chat[i].text}
+                    </div>`
+        
         }
         conversas.innerHTML = conversas.innerHTML + template;
         
@@ -95,20 +98,20 @@ function exibeChat(){
 
 function enviaMensagens(){
     let msg = document.querySelector("input").value;
-    if(document.querySelector("input").value != ""){
-        const novaMsg = {
-            from:`${nome}`,
-            to:`Todos`,
-            text:`${msg}`,
-            type:`message`
-        }
 
-        document.querySelector("input").value = "";
-
-        const envio = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', novaMsg);
-        envio.then(sucessoEnvio);
-        envio.catch(erroEnvio);
+    const novaMsg = {
+        from:`${nome}`,
+        to:`Todos`,
+        text:`${msg}`,
+        type:`message`
     }
+
+    document.querySelector("input").value = "";
+
+    const envio = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', novaMsg);
+    envio.then(sucessoEnvio);
+    envio.catch(erroEnvio);
+    
 }
 
 function sucessoEnvio(certim){
