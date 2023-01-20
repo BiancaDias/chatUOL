@@ -19,8 +19,9 @@ function entrada(){
 
 function sucesso(resposta){
     console.log("usuario fez loguin");
-    manterLogado();
-    setInterval(manterLogado, 3000);  
+    carregarChat();
+    setInterval(manterLogado, 5000); 
+    setInterval(carregarChat, 3000); 
 }
 
 function trataErro(erro){
@@ -40,9 +41,6 @@ function manterLogado(){
 
 function sucessoOnline(resposta){
     console.log(resposta.status) // se responde 200, vamos atualizar as mensagens
-    if(resposta.status === 200){
-        carregarChat();
-    }
 }
 
 function erroOnline(erro){
@@ -91,7 +89,12 @@ function exibeChat(){
                 template =`
                 <div data-test="message" class="mensagem reservadamente">
                     <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to}: </span>${chat[i].text}
-                </div>`
+                    </div>`
+            }else{
+                template =`
+                <div data-test="message" class="mensagem reservadamente escondido">
+                    <span class="hora">(${chat[i].time}) </span><span class="nome"> ${chat[i].from} </span> reservadamente para <span class="nome"> ${chat[i].to}: </span>${chat[i].text}
+                    </div>`
             }
         }
         conversas.innerHTML = conversas.innerHTML + template;
